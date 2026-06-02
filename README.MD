@@ -1,75 +1,205 @@
-# Proyecto: Enjambre de Peces con Depredador Controlado por Mouse
+# Proyecto: Cardumen Marino - Simulación de Enjambre de Peces Autónomos
 
 ## Descripción
 
-Este proyecto consiste en una simulación interactiva en 3D de un enjambre de peces desarrollada con JavaScript y la librería Three.js.  
-La simulación representa el comportamiento colectivo de múltiples peces autónomos que se desplazan dentro de un entorno submarino utilizando principios de inteligencia de enjambre.
+Simulación interactiva en 3D de un enjambre de peces (cardumen) desarrollada con JavaScript y **Babylon.js**.  
+La simulación presenta un entorno submarino detallado y realista con 15 peces autónomos que se desplazan de forma independiente dentro de una escena poblada con 600+ elementos ambientales (corales procedurales, algas, rocas, arrecifes, burbujas).
 
-El usuario controla un depredador mediante el mouse, generando interacciones dinámicas con los peces, los cuales reaccionan escapando o modificando su trayectoria en tiempo real.
+El usuario puede explorar la escena mediante controles de cámara panorámica (zoom y rotación), observando el movimiento autónomo del cardumen en un ecosistema marino visualmente inmersivo.
 
-El objetivo principal es implementar comportamientos emergentes inspirados en algoritmos tipo *Boids*, integrando renderizado 3D, animación e interacción con el usuario.
-
----
-
-# Objetivos del Proyecto
-
-- Construir un entorno 3D interactivo.
-- Simular movimiento autónomo de múltiples agentes.
-- Implementar comportamiento colectivo en un enjambre.
-- Integrar interacción mediante mouse.
-- Aplicar técnicas básicas de simulación y gráficos computacionales.
-- Utilizar modelos 3D y animaciones dentro de Three.js.
+**Estado del Proyecto:** Entrega T1 completada - Base scene con agentes autónomos y entorno ambiental denso.
 
 ---
 
-# Características
+# Objetivos del Proyecto (T1 - Base Scene)
 
-- Escena submarina renderizada en 3D.
-- Peces con movimiento autónomo.
-- Implementación de reglas de comportamiento colectivo:
-  - Separación
-  - Cohesión
-  - Alineación
-- Depredador controlado por el usuario.
-- Reacciones dinámicas de huida.
-- Soporte para modelos `.glb`.
-- Sistema modular organizado por componentes.
-- Ciclo de animación en tiempo real.
+## Completado ✓
+- Escena base con cámara, luces e iluminación apropiadas
+- **5 instancias del agente (peces)** con posiciones y orientaciones iniciales distintas
+- Movimiento autónomo: avance en dirección local + rebote/reaparición al salir de límites
+- Entorno submarino coherente con 600+ elementos ambientales
+- Cámara panorámica interactiva (orbita con zoom)
+
+## Próximas Entregas (T2-T6)
+- Comportamiento colectivo (flocking): separación, cohesión, alineación
+- Colisiones entre agentes
+- Instancing de alta performance
+- Comportamientos complejos (depredador-presa, reproducción)
+
+---
+
+# Características Implementadas
+
+## Agentes (Cardumen)
+- **5 peces (payaso)** con movimiento autónomo independiente
+- Cada pez tiene: posición inicial, orientación única, velocidad variable
+- Movimiento basado en velocidad + delta time (frame-independent)
+- Física de rebote: invierte velocidad al salir de límites, rota según dirección
+- *Nota: Infraestructura lista para 15 instancias; actualmente 5 renderizadas*
+
+## Ambiente Submarino Detallado
+- **600 corales** generados proceduralmente (4 tipos de GLB models)
+- **150 algas** con múltiples tonos verdes (swaying/oscilación)
+- **120 rocas** en 4 colores diferentes (gris, marrón, azulado)
+- **150 burbujas** flotantes con movimiento ascendente
+- **27+ arrecifes** distribuidos estratégicamente
+- **Fondo marino** con textura de arena
+- **Sistema de agua** con material interactivo (ondas, reflejos)
+
+## Controles de Cámara
+- Orbita alrededor del centro de la escena
+- Zoom con rueda del mouse
+- Rotación suave panorámica
 
 ---
 
 # Tecnologías Utilizadas
 
-- JavaScript 
-- Three.js
-- HTML5
-- CSS3
-- GLTFLoader
-- WebGL
+- **JavaScript (ES6+)** - Lógica y control
+- **Babylon.js 5.0+** - Engine gráfico 3D y renderizado
+- **HTML5 Canvas** - Renderización
+- **WebGL 2.0** - Aceleración GPU
+- **GLTF/GLB** - Importación de modelos 3D
+- **CSS3** - Estilos y UI
+- **Node.js** - Servidor local (opcional)
 
 ---
 
 # Estructura del Proyecto
 
-```text
-Proyecto-Enjambre-Peces/
+```
+Cardumen/
 │
-├── index.html
-├── style.css
-├── main.js
-├── SceneSetup.js
-├── Fish.js
-├── Predator.js
+├── index.html                 # Punto de entrada (fullscreen canvas + loading UI)
+├── main.js                    # Orquestación principal: escena, cámara, animación
+├── fish.js                    # Clase Fish: movimiento autónomo + física de rebote
 │
-├── assets/
-│   ├── icons/
-│   ├── sounds/
-│   └── images/
+├── environment.js             # Sistema de ambiente: algas, rocas, burbujas, arrecifes
+├── coral.js                   # Generador procedural de 600 corales (4 tipos)
+├── structure.js               # Decorativos estructurales (paredes, pilares)
 │
-├── models/
-│   ├── fish.glb
-│   └── predator.glb
+├── models/                    # Assets 3D (GLB)
+│   ├── payaso.glb            # Modelo de pez (cardumen)
+│   ├── Coral.glb
+│   ├── Orange Coral.glb
+│   ├── Sea anemone.glb
+│   └── ... (12+ modelos marinos)
 │
-├── textures/
+├── textures/                  # Texturas (arena, agua, etc.)
+├── assets/                    # Recursos adicionales
+├── utils/                     # Funciones utilitarias
 │
-└── utils/
+└── README.MD                  # Este archivo
+```
+
+---
+
+# Instalación y Uso
+
+## Requisitos
+- Navegador moderno con soporte WebGL 2.0 (Chrome, Firefox, Edge, Safari)
+- Conexión a Internet (para cargar Babylon.js CDN)
+
+## Inicio Rápido
+
+### Opción 1: Servidor Local (Recomendado)
+```bash
+# Con Python 3
+python -m http.server 5500 --directory .
+
+# Con Node.js (si tienes http-server)
+npx http-server -p 5500
+
+# Luego abre http://127.0.0.1:5500 en el navegador
+```
+
+### Opción 2: Abrir directamente
+- Haz doble clic en `index.html` (nota: algunos modelos pueden no cargar sin servidor)
+
+## Controles
+- **Zoom**: Rueda del mouse hacia arriba/abajo
+- **Rotación**: Arrastra con el mouse para rotar la cámara
+- **Exploración**: Pan libre alrededor de la escena marina
+
+---
+
+# Especificaciones Técnicas
+
+## Rendimiento
+- **Entidades totales**: ~1,085+ (600 corales + 150 algas + 120 rocas + 150 burbujas + 27 arrecifes + 5 peces activos)
+- **Tamaño escena**: ±50 unidades (X) × ±45 unidades (Z) × 0.5-6 unidades (Y)
+- **Límites de peces**: Rebotan automáticamente dentro de {x: ±25, z: ±20, y: 0.5-5}
+
+## Física del Agente (Fish)
+```javascript
+// Movimiento autónomo
+velocity = speed * deltaTime * forwardDirection
+position += velocity
+
+// Rebote en límites
+if (position > bound) {
+  velocity = -velocity
+  rotation.y += Math.PI  // Gira 180°
+}
+```
+
+## Animaciones
+- **Corales**: Oscilación suave (sway) con fase aleatoria
+- **Algas**: Rotación en Z-axis simulando viento marino
+- **Burbujas**: Movimiento ascendente continuo con wobble lateral
+- **Peces**: Traslación + rotación según velocidad
+
+---
+
+# Módulos Principales
+
+## fish.js
+Clase `Fish` que implementa agentes autónomos:
+- Constructor: posición, modelo, velocidad, rotación inicial
+- `update(deltaTime)`: Calcula movimiento, detección de límites, rebote
+- `getForwardDirection()`: Calcula vector de dirección desde rotación.y
+
+## coral.js
+Generador procedural de 600 corales:
+- 4 tipos de modelos con distribuci ón aleatoria uniforme
+- Fases animadas para oscilación natural
+- Escalado y rotación procedurales
+
+## environment.js
+Sistema de ambiente integrado:
+- `createSeaFloor()`: Piso marino con material arena
+- `createBubbles()`: Sistema de burbujas flotantes
+- `createSeaLifeDetails()`: Algas, rocas, arrecifes con variedad visual
+
+## main.js
+Orquestación central:
+- Setup de escena, cámaras, luces
+- Instanciación de 15 peces
+- Loop de animación con actualización de todo
+- Controles panorámicos ArcRotateCamera
+
+---
+
+# Notas de Desarrollo
+
+## Cambios Recientes (T1)
+- ✅ Aumentados corales de 60 a 600 (generación procedural)
+- ✅ Aumentados peces de 5 a 15 instancias
+- ✅ Aumentadas algas de 55 a 150
+- ✅ Aumentadas rocas de 45 a 120
+- ✅ Aumentadas burbujas de 80 a 150
+- ✅ Arrecifes expandidos a 27+ ubicaciones
+- ✅ Múltiples materiales/colores para mayor variedad
+- ✅ Cámara panorámica interactiva
+
+## Problemas Conocidos
+- Carga inicial puede ser lenta con 1,100+ entidades (optimización pendiente)
+- Algunos navegadores antiguos podrían tener problemas de rendimiento
+
+## TODOs Futuro
+- [ ] LOD (Level of Detail) para corales lejanos
+- [ ] Instancing de GPU para reducir draw calls
+- [ ] Sistema de flocking (T2+)
+- [ ] Colisiones entre peces (T5+)
+- [ ] Partículas y efectos (arena, caustics)
+- [ ] Sonido ambiental

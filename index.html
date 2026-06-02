@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fish Swarm T1</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; font-family: Arial, sans-serif; }
+    #renderCanvas { width: 100%; height: 100%; display: block; }
+    #loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1a4d6d 0%, #0f3d52 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      font-size: 20px;
+      color: #66ccff;
+      font-weight: bold;
+    }
+    .spinner {
+      border: 4px solid rgba(102, 204, 255, 0.3);
+      border-top: 4px solid #66ccff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin-right: 15px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div class="spinner"></div>
+    <span>Cargando escena submarina...</span>
+  </div>
+  <canvas id="renderCanvas" touch-action="none"></canvas>
+  
+  <!-- Babylon.js desde CDN official con crossorigin -->
+  <script crossorigin src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script crossorigin src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.js"></script>
+  <script crossorigin src="https://cdn.babylonjs.com/materialsLibrary/babylon.waterMaterial.js"></script>
+  <script type="module" src="main.js"></script>
+</body>
+</html>
