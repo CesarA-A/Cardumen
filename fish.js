@@ -6,7 +6,9 @@ export default class Fish {
     this.root.rotation.copyFrom(startRot);
     this.speed = speed;
 
-    // Cargar modelo del pez de forma asincrónica
+    // FIX: pre-alocar vector para evitar new BABYLON.Vector3 cada frame
+    this._forward = new BABYLON.Vector3();
+
     BABYLON.SceneLoader.ImportMesh("", modelPath, modelFile, scene, (meshes) => {
       if (meshes.length === 0) {
         console.warn(`No meshes found in ${modelFile}`);
@@ -32,10 +34,15 @@ export default class Fish {
     if (!this.root) return;
 
     const deltaTime = this.scene.getEngine().getDeltaTime() / 1000;
-    const forward = this.getForwardDirection();
 
-    // Avanzar en la direccion local del agente.
-    this.root.position.addInPlace(forward.scale(this.speed * deltaTime));
+    // FIX: reutilizar _forward en vez de crear un vector nuevo cada frame
+    this._forward.set(
+      Math.sin(this.root.rotation.y),
+      0,
+      Math.cos(this.root.rotation.y)
+    );
+
+    this.root.position.addInPlace(this._forward.scaleInPlace(this.speed * deltaTime));
 
     let bouncedX = false;
     let bouncedZ = false;
@@ -70,13 +77,5 @@ export default class Fish {
     if (bouncedZ) {
       this.root.rotation.y = Math.PI - this.root.rotation.y;
     }
-  }
-
-  getForwardDirection() {
-    return new BABYLON.Vector3(
-      Math.sin(this.root.rotation.y),
-      0,
-      Math.cos(this.root.rotation.y)
-    ).normalize();
   }
 }

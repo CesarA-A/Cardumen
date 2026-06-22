@@ -31,22 +31,26 @@ const loadStructureModel = (scene, fileName, position, rotation, scale) => {
  * @param {BABYLON.Scene} scene
  * @returns {{ portal, wall, arrecifeGrande, arrecifeMediano, arrecifePequeno }}
  */
-export const createStructures = (scene) => {
-  const portal = loadStructureModel(
-    scene,
-    "pixellabs-underwater-portal-3d-model-2691.glb",
-    new BABYLON.Vector3(-12, 2.0, -10),
-    new BABYLON.Vector3(0, Math.PI * 0.18, 0),
-    8
-  );
+export const createStructures = (scene, { loadHeavyModels = true } = {}) => {
+  const portal = loadHeavyModels
+    ? loadStructureModel(
+      scene,
+      "pixellabs-underwater-portal-3d-model-2691.glb",
+      new BABYLON.Vector3(-12, 2.0, -10),
+      new BABYLON.Vector3(0, Math.PI * 0.18, 0),
+      8
+    )
+    : null;
 
-  const wall = loadStructureModel(
-    scene,
-    "mastertux-wall-2127.glb",
-    new BABYLON.Vector3(28, -0.75, 15),
-    new BABYLON.Vector3(0, Math.PI * 0.72, 0),
-    1.05
-  );
+  const wall = loadHeavyModels
+    ? loadStructureModel(
+      scene,
+      "mastertux-wall-2127.glb",
+      new BABYLON.Vector3(28, -0.75, 15),
+      new BABYLON.Vector3(0, Math.PI * 0.72, 0),
+      1.05
+    )
+    : null;
 
   const arrecifePequeno = loadStructureModel(
     scene,

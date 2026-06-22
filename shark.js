@@ -48,15 +48,21 @@ export default class Shark {
 
     // ── Cargar modelo ──────────────────────────────────────────────────────
     BABYLON.SceneLoader.ImportMesh("", modelPath, "Shark.glb", scene, (meshes) => {
+      if (!meshes || meshes.length === 0) {
+        console.warn("Shark.glb: no se encontraron meshes, usando fallback");
+        this._createFallbackShark();
+        return;
+      }
       const pivot = new BABYLON.TransformNode("sharkMesh", scene);
       meshes.forEach((m) => (m.parent = pivot));
-      pivot.parent    = this.root;
-      pivot.rotation.y = Math.PI; // corregir orientación del modelo
-      pivot.scaling.setAll(0.018);
+      pivot.parent = this.root;
+      pivot.rotation.y = 0; // orientación corregida
+      // Escala ajustada — el modelo es un mesh simple sin bones
+      pivot.scaling.setAll(1.0);
       this.sharkMesh = pivot;
-    }, null, () => {
-      // Fallback si no carga el modelo: crear un tiburón simple
-      console.warn("Shark.glb no cargó, usando modelo simple");
+      console.log("✅ Shark.glb cargado correctamente");
+    }, null, (scene, msg) => {
+      console.warn("Shark.glb no cargó:", msg, "— usando fallback");
       this._createFallbackShark();
     });
 
@@ -109,10 +115,8 @@ export default class Shark {
   }
 
   _registerEvents() {
-    const canvas = this.scene.getEngine().getRenderingCanvas();
-
     // Movimiento del cursor → calcular ángulo objetivo
-    this._onPointerMove = (evt) => {
+    this._onPointerMove = () => {
       const pickResult = this.scene.pick(
         this.scene.pointerX,
         this.scene.pointerY,
@@ -144,6 +148,11 @@ export default class Shark {
         this._onPointerDown();
       }
     });
+
+    // Q = subir, E = bajar
+    this._keys = {};
+    window.addEventListener("keydown", (e) => { this._keys[e.key.toLowerCase()] = true; });
+    window.addEventListener("keyup",   (e) => { this._keys[e.key.toLowerCase()] = false; });
   }
 
   update() {
@@ -161,8 +170,18 @@ export default class Shark {
       }
     }
 
+    // ── Subir / bajar con Q y E ────────────────────────────────────────────
+    const verticalSpeed = 4.0;
+    if (this._keys["q"]) this.root.position.y += verticalSpeed * deltaTime;
+    if (this._keys["e"]) this.root.position.y -= verticalSpeed * deltaTime;
+
+    // Inclinar el tiburón según si sube o baja
+    const targetPitch = this._keys["q"] ?  0.35
+                      : this._keys["e"] ? -0.35
+                      : 0;
+    this.root.rotation.x += (targetPitch - this.root.rotation.x) * Math.min(deltaTime * 6, 1);
+
     // ── Girar suavemente hacia el cursor ───────────────────────────────────
-    // Interpolación angular (shortest path)
     let diff = this._targetRotY - this.root.rotation.y;
     while (diff >  Math.PI) diff -= Math.PI * 2;
     while (diff < -Math.PI) diff += Math.PI * 2;
