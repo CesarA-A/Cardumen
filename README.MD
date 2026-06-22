@@ -183,14 +183,14 @@ Orquestación central:
 # Notas de Desarrollo
 
 ## Cambios Recientes (T1)
-- ✅ Aumentados corales de 60 a 600 (generación procedural)
-- ✅ Aumentados peces de 5 a 15 instancias
-- ✅ Aumentadas algas de 55 a 150
-- ✅ Aumentadas rocas de 45 a 120
-- ✅ Aumentadas burbujas de 80 a 150
-- ✅ Arrecifes expandidos a 27+ ubicaciones
-- ✅ Múltiples materiales/colores para mayor variedad
-- ✅ Cámara panorámica interactiva
+- Aumentados corales de 60 a 600 (generación procedural)
+- Aumentados peces de 5 a 15 instancias
+- Aumentadas algas de 55 a 150
+- Aumentadas rocas de 45 a 120
+- Aumentadas burbujas de 80 a 150
+- Arrecifes expandidos a 27+ ubicaciones
+- Múltiples materiales/colores para mayor variedad
+- Cámara panorámica interactiva
 
 ## Problemas Conocidos
 - Carga inicial puede ser lenta con 1,100+ entidades (optimización pendiente)
