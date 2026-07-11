@@ -1,12 +1,4 @@
-/**
- * Clase Shark — depredador controlado por el jugador.
- *
- * Controles:
- *  - Mover el cursor  → el tiburón gira suavemente hacia donde apunta el mouse
- *  - Click izquierdo  → sprint de ataque (velocidad x2.5 durante ~1 seg)
- *
- * La cámara en tercera persona se configura en main.js apuntando a shark.root.
- */
+
 export default class Shark {
   /**
    * @param {BABYLON.Scene} scene
@@ -27,7 +19,7 @@ export default class Shark {
     // ── Estado de sprint ───────────────────────────────────────────────────
     this._sprinting    = false;
     this._sprintTimer  = 0;
-    this._sprintDuration = 1.0; // segundos
+    this._sprintDuration = 3.0; // segundos
 
     // ── Dirección objetivo (ángulo Y) ──────────────────────────────────────
     this._targetRotY = 0;
@@ -44,7 +36,7 @@ export default class Shark {
     this._pickPlane.isVisible   = false;
 
     // ── Límites del escenario ──────────────────────────────────────────────
-    this.bounds = { x: 42, z: 36, y: { min: 0.5, max: 6.5 } };
+    this.bounds = { x: 80, z: 66, y: { min: 0.5, max: 11.5 } };
 
     // ── Cargar modelo ──────────────────────────────────────────────────────
     BABYLON.SceneLoader.ImportMesh("", modelPath, "Shark.glb", scene, (meshes) => {

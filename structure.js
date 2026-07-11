@@ -55,7 +55,7 @@ export const createStructures = (scene, { loadHeavyModels = true } = {}) => {
   const arrecifePequeno = loadStructureModel(
     scene,
     "arrecife_pasaje_pequeno.glb",
-    new BABYLON.Vector3(38, -0.35, 27),
+    new BABYLON.Vector3(70, -0.35, 50),
     new BABYLON.Vector3(0, Math.PI * 0.85, 0),
     1.0
   );
@@ -63,7 +63,7 @@ export const createStructures = (scene, { loadHeavyModels = true } = {}) => {
   const arrecifeMediano = loadStructureModel(
     scene,
     "arrecife_pasaje_mediano.glb",
-    new BABYLON.Vector3(-35, -0.35, 20),
+    new BABYLON.Vector3(-65, -0.35, 36),
     new BABYLON.Vector3(0, Math.PI * 0.3, 0),
     1.0
   );
@@ -71,7 +71,7 @@ export const createStructures = (scene, { loadHeavyModels = true } = {}) => {
   const arrecifeGrande = loadStructureModel(
     scene,
     "arrecife_pasaje_grande.glb",
-    new BABYLON.Vector3(0, -0.35, -35),
+    new BABYLON.Vector3(0, -0.35, -65),
     new BABYLON.Vector3(0, Math.PI * 1.1, 0),
     1.0
   );

@@ -4,7 +4,7 @@ export const createFpsDisplay = (engine) => {
   panel.textContent = "FPS: --";
   panel.style.position = "fixed";
   panel.style.top = "12px";
-  panel.style.right = "12px";
+  panel.style.left = "12px";
   panel.style.zIndex = "20";
   panel.style.padding = "8px 10px";
   panel.style.borderRadius = "6px";
@@ -26,4 +26,4 @@ export const createFpsDisplay = (engine) => {
       }
     }
   };
-};
+};  

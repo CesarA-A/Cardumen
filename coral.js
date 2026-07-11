@@ -24,16 +24,16 @@ const loadCoralModel = (scene, modelFile, position, scale, rotation, animated = 
 export const createCorals = (scene) => {
   const corals = [];
   const counts = {
-    coral: 3,
-    coralVariant: 3,
-    orangeCoral: 4,
-    anemone: 7
+    coral: 15,
+    coralVariant: 15,
+    orangeCoral: 20,
+    anemone: 35
   };
 
   const staticCoralPositions = [];
   for (let i = 0; i < counts.coral; i++) {
     staticCoralPositions.push(
-      new BABYLON.Vector3(randomBetween(-50, 50), -0.75, randomBetween(-45, 45))
+      new BABYLON.Vector3(randomBetween(-95, 95), -0.75, randomBetween(-85, 85))
     );
   }
   staticCoralPositions.forEach((pos) => {
@@ -45,7 +45,7 @@ export const createCorals = (scene) => {
   const staticCoral2Positions = [];
   for (let i = 0; i < counts.coralVariant; i++) {
     staticCoral2Positions.push(
-      new BABYLON.Vector3(randomBetween(-50, 50), -0.75, randomBetween(-45, 45))
+      new BABYLON.Vector3(randomBetween(-95, 95), -0.75, randomBetween(-85, 85))
     );
   }
   staticCoral2Positions.forEach((pos) => {
@@ -57,7 +57,7 @@ export const createCorals = (scene) => {
   const orangeCoralPositions = [];
   for (let i = 0; i < counts.orangeCoral; i++) {
     orangeCoralPositions.push(
-      new BABYLON.Vector3(randomBetween(-50, 50), -0.75, randomBetween(-45, 45))
+      new BABYLON.Vector3(randomBetween(-95, 95), -0.75, randomBetween(-85, 85))
     );
   }
   orangeCoralPositions.forEach((pos) => {
@@ -69,7 +69,7 @@ export const createCorals = (scene) => {
   const anemonePositions = [];
   for (let i = 0; i < counts.anemone; i++) {
     anemonePositions.push(
-      new BABYLON.Vector3(randomBetween(-50, 50), -0.75, randomBetween(-45, 45))
+      new BABYLON.Vector3(randomBetween(-95, 95), -0.75, randomBetween(-85, 85))
     );
   }
   anemonePositions.forEach((pos) => {

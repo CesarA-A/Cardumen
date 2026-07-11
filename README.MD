@@ -1,205 +1,92 @@
-# Proyecto: Cardumen Marino - Simulación de Enjambre de Peces Autónomos
+# Proyecto: Cardumen Marino - Sistema Completo de Enjambre (Boids + Render + Shader)
 
 ## Descripción
 
-Simulación interactiva en 3D de un enjambre de peces (cardumen) desarrollada con JavaScript y **Babylon.js**.  
-La simulación presenta un entorno submarino detallado y realista con 15 peces autónomos que se desplazan de forma independiente dentro de una escena poblada con 600+ elementos ambientales (corales procedurales, algas, rocas, arrecifes, burbujas).
+Simulación 3D interactiva de un cardumen con comportamiento de enjambre (Boids) desarrollada con **Babylon.js**. Integra todos los entregables del semestre en un único sistema:
 
-El usuario puede explorar la escena mediante controles de cámara panorámica (zoom y rotación), observando el movimiento autónomo del cardumen en un ecosistema marino visualmente inmersivo.
-
-**Estado del Proyecto:** Entrega T1 completada - Base scene con agentes autónomos y entorno ambiental denso.
-
----
-
-# Objetivos del Proyecto (T1 - Base Scene)
-
-## Completado ✓
-- Escena base con cámara, luces e iluminación apropiadas
-- **5 instancias del agente (peces)** con posiciones y orientaciones iniciales distintas
-- Movimiento autónomo: avance en dirección local + rebote/reaparición al salir de límites
-- Entorno submarino coherente con 600+ elementos ambientales
-- Cámara panorámica interactiva (orbita con zoom)
-
-## Próximas Entregas (T2-T6)
-- Comportamiento colectivo (flocking): separación, cohesión, alineación
-- Colisiones entre agentes
-- Instancing de alta performance
-- Comportamientos complejos (depredador-presa, reproducción)
+- Escena submarina base con entorno, iluminación y cámara panorámica (T1).
+- 600+ elementos ambientales (corales, algas, rocas, arrecifes, burbujas).
+- Tiburón jugable como depredador en tercera persona.
+- **Flocking completo (Boids)** con 200 agentes simultáneos y parámetros ajustables en vivo.
+- **Render eficiente** mediante instancing GPU (`createInstance`), manteniendo 30+ FPS con 200 agentes.
+- **Shader propio** (rim/fresnel + difuso) aplicado a los agentes, coherente con la niebla y luz direccional de la escena base.
+- Animación de nado independiente por agente (cada pez tiene su propia frecuencia y fase).
 
 ---
 
-# Características Implementadas
+## Componentes del Sistema Final
 
-## Agentes (Cardumen)
-- **5 peces (payaso)** con movimiento autónomo independiente
-- Cada pez tiene: posición inicial, orientación única, velocidad variable
-- Movimiento basado en velocidad + delta time (frame-independent)
-- Física de rebote: invierte velocidad al salir de límites, rota según dirección
-- *Nota: Infraestructura lista para 15 instancias; actualmente 5 renderizadas*
+### 1. Flocking completo — `fishSwarm.js` (30%)
+- Implementa las **3 reglas de Reynolds**: separación, alineación y cohesión.
+- **200 agentes** simultáneos, vecinos calculados con **spatial hashing** (evita el costo O(n²)).
+- Parámetros ajustables en tiempo real vía **dat.GUI**: pesos de separación/alineación/cohesión, radio de percepción y velocidad máxima (`createFlockingGUI()` en `main.js`).
 
-## Ambiente Submarino Detallado
-- **600 corales** generados proceduralmente (4 tipos de GLB models)
-- **150 algas** con múltiples tonos verdes (swaying/oscilación)
-- **120 rocas** en 4 colores diferentes (gris, marrón, azulado)
-- **150 burbujas** flotantes con movimiento ascendente
-- **27+ arrecifes** distribuidos estratégicamente
-- **Fondo marino** con textura de arena
-- **Sistema de agua** con material interactivo (ondas, reflejos)
+### 2. Render eficiente — `fishSwarm.js` (25%)
+- Un único modelo fuente (`payaso.glb`) se carga una vez; cada agente es una **instancia GPU** (`mesh.createInstance`), no una copia de geometría.
+- `fpsDisplay.js` muestra el FPS en pantalla en tiempo real (esquina superior derecha).
+- Cada agente tiene su propio `TransformNode` pivote con fase y velocidad de nado distintas (`agent.swimSpeed`, `agent.phase`), por lo que **las animaciones se ven independientes** entre peces aunque compartan malla.
 
-## Controles de Cámara
-- Orbita alrededor del centro de la escena
-- Zoom con rueda del mouse
-- Rotación suave panorámica
+### 3. Iluminación avanzada — `fishShader.js` (20%)
+- Shader propio escrito en GLSL (`BABYLON.ShaderMaterial`) aplicado al mesh fuente de los agentes (heredado automáticamente por todas sus instancias).
+- Combina iluminación difusa (Lambert) usando la **misma dirección de luz direccional de la escena base**, rim light/Fresnel para resaltar contornos bajo el agua, y mezcla con el color de niebla de T1 para integrarse visualmente con el resto del entorno.
+
+### 4. Calidad visual y presentación (15%)
+- Escena con contexto completo: piso de arena, corales animados, algas, burbujas, arrecifes y tiburón jugable.
+- Cámara orbital panorámica + controles del tiburón (mouse para dirigir, Q/E para subir/bajar, click para sprint).
 
 ---
 
-# Tecnologías Utilizadas
-
-- **JavaScript (ES6+)** - Lógica y control
-- **Babylon.js 5.0+** - Engine gráfico 3D y renderizado
-- **HTML5 Canvas** - Renderización
-- **WebGL 2.0** - Aceleración GPU
-- **GLTF/GLB** - Importación de modelos 3D
-- **CSS3** - Estilos y UI
-- **Node.js** - Servidor local (opcional)
-
----
-
-# Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 Cardumen/
 │
-├── index.html                 # Punto de entrada (fullscreen canvas + loading UI)
-├── main.js                    # Orquestación principal: escena, cámara, animación
-├── fish.js                    # Clase Fish: movimiento autónomo + física de rebote
+├── index.html              # Entrada: canvas, loading UI, CDN de Babylon.js + dat.GUI
+├── main.js                  # Orquestación: escena, cámara, luces, loop de animación
 │
-├── environment.js             # Sistema de ambiente: algas, rocas, burbujas, arrecifes
-├── coral.js                   # Generador procedural de 600 corales (4 tipos)
-├── structure.js               # Decorativos estructurales (paredes, pilares)
+├── fishSwarm.js              # Boids completo + instancing + GUI + animación independiente
+├── fishShader.js              # Shader propio (GLSL) para iluminación de los agentes
+├── shark.js                  # Tiburón jugable (depredador, control con mouse/teclado)
+├── fish.js                    # Clase Fish individual (legado T1, base del movimiento autónomo)
 │
-├── models/                    # Assets 3D (GLB)
-│   ├── payaso.glb            # Modelo de pez (cardumen)
-│   ├── Coral.glb
-│   ├── Orange Coral.glb
-│   ├── Sea anemone.glb
-│   └── ... (12+ modelos marinos)
+├── environment.js             # Piso marino, burbujas, polvo de agua, algas/rocas/arrecifes
+├── coral.js                   # Generador procedural de corales
+├── structure.js                # Estructuras decorativas (portales, paredes, pasajes)
+├── fpsDisplay.js                # Contador de FPS en pantalla
 │
-├── textures/                  # Texturas (arena, agua, etc.)
-├── assets/                    # Recursos adicionales
-├── utils/                     # Funciones utilitarias
-│
-└── README.MD                  # Este archivo
+├── models/                      # Assets 3D (GLB): payaso.glb, Shark.glb, corales, etc.
+└── README.MD
 ```
 
 ---
 
-# Instalación y Uso
+## Instalación y Uso
 
-## Requisitos
-- Navegador moderno con soporte WebGL 2.0 (Chrome, Firefox, Edge, Safari)
-- Conexión a Internet (para cargar Babylon.js CDN)
-
-## Inicio Rápido
-
-### Opción 1: Servidor Local (Recomendado)
 ```bash
-# Con Python 3
+# Servidor local (recomendado para que carguen los modelos GLB)
 python -m http.server 5500 --directory .
-
-# Con Node.js (si tienes http-server)
-npx http-server -p 5500
-
-# Luego abre http://127.0.0.1:5500 en el navegador
+# Abrir http://127.0.0.1:5500
 ```
 
-### Opción 2: Abrir directamente
-- Haz doble clic en `index.html` (nota: algunos modelos pueden no cargar sin servidor)
-
-## Controles
-- **Zoom**: Rueda del mouse hacia arriba/abajo
-- **Rotación**: Arrastra con el mouse para rotar la cámara
-- **Exploración**: Pan libre alrededor de la escena marina
+### Controles
+- **Cámara**: arrastrar para rotar, scroll para zoom.
+- **Tiburón**: mover el mouse para dirigir, `Q`/`E` para subir/bajar, click para sprint de ataque.
+- **Panel dat.GUI** (arriba a la derecha): ajustar pesos de Reynolds, radio de percepción y velocidad máxima del cardumen en tiempo real.
+- **FPS** (arriba a la derecha, debajo del panel): contador en vivo.
 
 ---
 
-# Especificaciones Técnicas
+## Decisiones Técnicas Clave
 
-## Rendimiento
-- **Entidades totales**: ~1,085+ (600 corales + 150 algas + 120 rocas + 150 burbujas + 27 arrecifes + 5 peces activos)
-- **Tamaño escena**: ±50 unidades (X) × ±45 unidades (Z) × 0.5-6 unidades (Y)
-- **Límites de peces**: Rebotan automáticamente dentro de {x: ±25, z: ±20, y: 0.5-5}
-
-## Física del Agente (Fish)
-```javascript
-// Movimiento autónomo
-velocity = speed * deltaTime * forwardDirection
-position += velocity
-
-// Rebote en límites
-if (position > bound) {
-  velocity = -velocity
-  rotation.y += Math.PI  // Gira 180°
-}
-```
-
-## Animaciones
-- **Corales**: Oscilación suave (sway) con fase aleatoria
-- **Algas**: Rotación en Z-axis simulando viento marino
-- **Burbujas**: Movimiento ascendente continuo con wobble lateral
-- **Peces**: Traslación + rotación según velocidad
+- **Spatial hashing** en lugar de comparar cada agente contra todos los demás: con 200 agentes esto evita un cuello de botella de 40,000 comparaciones por frame.
+- **Instancing en lugar de meshes duplicados**: un solo draw call comparte la geometría entre las 200 copias, lo cual es indispensable para sostener FPS estables.
+- **Shader propio en el mesh fuente, no en cada instancia**: Babylon.js inyecta automáticamente la matriz de mundo por instancia (`instancesVertex`), así que el shader no necesita lógica adicional para funcionar con instancing.
+- **Fase y velocidad de nado individuales** en vez de animaciones por hueso (bone/VAT) para mantener el costo de render bajo, mientras se logra variedad visual perceptible entre agentes.
 
 ---
 
-# Módulos Principales
-
-## fish.js
-Clase `Fish` que implementa agentes autónomos:
-- Constructor: posición, modelo, velocidad, rotación inicial
-- `update(deltaTime)`: Calcula movimiento, detección de límites, rebote
-- `getForwardDirection()`: Calcula vector de dirección desde rotación.y
-
-## coral.js
-Generador procedural de 600 corales:
-- 4 tipos de modelos con distribuci ón aleatoria uniforme
-- Fases animadas para oscilación natural
-- Escalado y rotación procedurales
-
-## environment.js
-Sistema de ambiente integrado:
-- `createSeaFloor()`: Piso marino con material arena
-- `createBubbles()`: Sistema de burbujas flotantes
-- `createSeaLifeDetails()`: Algas, rocas, arrecifes con variedad visual
-
-## main.js
-Orquestación central:
-- Setup de escena, cámaras, luces
-- Instanciación de 15 peces
-- Loop de animación con actualización de todo
-- Controles panorámicos ArcRotateCamera
-
----
-
-# Notas de Desarrollo
-
-## Cambios Recientes (T1)
-- Aumentados corales de 60 a 600 (generación procedural)
-- Aumentados peces de 5 a 15 instancias
-- Aumentadas algas de 55 a 150
-- Aumentadas rocas de 45 a 120
-- Aumentadas burbujas de 80 a 150
-- Arrecifes expandidos a 27+ ubicaciones
-- Múltiples materiales/colores para mayor variedad
-- Cámara panorámica interactiva
-
-## Problemas Conocidos
-- Carga inicial puede ser lenta con 1,100+ entidades (optimización pendiente)
-- Algunos navegadores antiguos podrían tener problemas de rendimiento
-
-## TODOs Futuro
-- [ ] LOD (Level of Detail) para corales lejanos
-- [ ] Instancing de GPU para reducir draw calls
-- [ ] Sistema de flocking (T2+)
-- [ ] Colisiones entre peces (T5+)
-- [ ] Partículas y efectos (arena, caustics)
-- [ ] Sonido ambiental
+## Próximas mejoras posibles
+- [ ] LOD para corales lejanos.
+- [ ] Colisiones físicas entre agentes (actualmente solo repulsión por boids).
+- [ ] VAT real para animación de nado por hueso en lugar de wiggle procedural.
+- [ ] Comportamiento depredador-presa entre el tiburón y el cardumen.

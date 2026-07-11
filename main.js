@@ -1,4 +1,4 @@
-import FishSwarm from "./fishSwarm.js";
+import FishSwarm, { createFlockingGUI } from "./fishSwarm.js";
 import Shark from "./shark.js";
 import { createFpsDisplay } from "./fpsDisplay.js";
 import { createStructures } from "./structure.js";
@@ -13,12 +13,44 @@ const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas, true, undefined, true);
 const fpsDisplay = createFpsDisplay(engine);
 
+// ── Marcador de puntos ────────────────────────────────────────────────────
+let score = 0;
+const scoreEl = document.createElement("div");
+scoreEl.style.cssText = `
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  background: rgba(0, 20, 40, 0.82);
+  color: #fff;
+  font: bold 22px Arial, sans-serif;
+  padding: 8px 28px;
+  border-radius: 10px;
+  border: 1px solid rgba(100, 200, 255, 0.35);
+  pointer-events: none;
+  text-align: center;
+  min-width: 200px;
+  transition: background 0.15s;
+`;
+scoreEl.innerHTML = ' Peces: <span id="scoreNum">0</span>';
+document.body.appendChild(scoreEl);
+
+const addScore = (n) => {
+  if (n <= 0) return;
+  score += n;
+  document.getElementById("scoreNum").textContent = score;
+  // Flash rojo breve al comer
+  scoreEl.style.background = "rgba(180, 30, 0, 0.92)";
+  setTimeout(() => { scoreEl.style.background = "rgba(0, 20, 40, 0.82)"; }, 180);
+};
+
 const configureSceneAtmosphere = (scene) => {
   scene.clearColor = new BABYLON.Color4(0.05, 0.3, 0.5, 1);
   scene.ambientColor = new BABYLON.Color3(0.2, 0.3, 0.4);
   scene.fogMode = BABYLON.Scene.FOGMODE_EXP2;
   scene.fogColor = new BABYLON.Color3(0.05, 0.28, 0.42);
-  scene.fogDensity = 0.018;
+  scene.fogDensity = 0.010;
 };
 
 const createCamera = (scene) => {
@@ -32,7 +64,7 @@ const createCamera = (scene) => {
   );
 
   camera.lowerRadiusLimit = 30;
-  camera.upperRadiusLimit = 120;
+  camera.upperRadiusLimit = 220;
   camera.lowerBetaLimit = Math.PI / 6;
   camera.upperBetaLimit = Math.PI * 0.75;
   camera.wheelPrecision = 40;
@@ -69,16 +101,21 @@ const createScene = () => {
 
   configureSceneAtmosphere(scene);
   createCamera(scene);
-  createLights(scene);
+  const { dirLight } = createLights(scene);
 
   const environment = createUnderwaterEnvironment(scene);
   const seaLifeDetails = createSeaLifeDetails(scene);
-  const fishSwarm = new FishSwarm(scene, 100);
+
+  // Cardumen con flocking completo (separación + alineación + cohesión),
+  // instancing GPU y shader propio. Se pasa la dirección de la luz
+  // direccional de la escena base para que el shader sea coherente con T1.
+  const fishSwarm = new FishSwarm(scene, 350);
+  createFlockingGUI(); // controles en tiempo real (pesos de Reynolds, radio, velocidad)
+
   createStructures(scene, { loadHeavyModels: false });
 
   const shark = new Shark(scene, "models/", new BABYLON.Vector3(0, 2, 0));
 
-  // FIX: createCorals ahora devuelve { all, animated }
   const corals = createCorals(scene);
 
   scene.onBeforeRenderObservable.add(() => {
@@ -87,11 +124,11 @@ const createScene = () => {
 
     fpsDisplay.update(deltaTime);
     updateUnderwaterEnvironment(environment, scene, time, deltaTime);
-
-    // FIX: pasar solo el subset animado
     updateCorals(corals.animated, time);
 
-    fishSwarm.update(time, deltaTime);
+    const sharkPos = shark.root ? shark.root.position : null;
+    fishSwarm.update(time, deltaTime, sharkPos);
+    addScore(fishSwarm.tryEat(sharkPos));
     shark.update();
 
     const seaweed = seaLifeDetails.seaweed;
